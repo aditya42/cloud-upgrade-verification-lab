@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cloud-upgrade-lab.name" . }}
+spec:
+  replicas: {{ .Values.app.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "cloud-upgrade-lab.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "cloud-upgrade-lab.name" . }}
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_VERSION
+              value: {{ .Values.image.tag | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.app.logLevel | quote }}
+            - name: DATABASE_URL
+              value: "postgresql+psycopg://{{ .Values.postgres.username }}:{{ .Values.postgres.password }}@{{ include "cloud-upgrade-lab.name" . }}-postgres:5432/{{ .Values.postgres.database }}"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 2

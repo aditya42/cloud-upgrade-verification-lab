@@ -1,0 +1,26 @@
+[project]
+name = "cloud-upgrade-verification-lab"
+version = "0.1.0"
+description = "Release and upgrade verification lab for cloud applications"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi==0.115.6",
+  "uvicorn[standard]==0.34.0",
+  "sqlalchemy==2.0.36",
+  "psycopg[binary]==3.2.3",
+  "pydantic==2.10.4",
+  "requests==2.32.3",
+  "pytest==8.3.4",
+]
+
+[project.optional-dependencies]
+dev = ["ruff==0.8.4"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "e2e: requires Docker, kind, kubectl, and Helm",
+]
+
+[tool.ruff]
+line-length = 100

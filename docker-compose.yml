@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: upgrade_lab
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d upgrade_lab"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      args:
+        RELEASE_VERSION: ${RELEASE_VERSION:-v2.0}
+    environment:
+      APP_VERSION: ${RELEASE_VERSION:-v2.0}
+      DATABASE_URL: postgresql+psycopg://app:app@postgres:5432/upgrade_lab
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

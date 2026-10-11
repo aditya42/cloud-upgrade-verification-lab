@@ -1,0 +1,15 @@
+image:
+  repository: cloud-upgrade-lab
+  tag: v2.0
+  pullPolicy: IfNotPresent
+
+app:
+  replicas: 1
+  logLevel: INFO
+
+postgres:
+  image: postgres:16-alpine
+  database: upgrade_lab
+  username: app
+  password: app
+  storage: 1Gi
